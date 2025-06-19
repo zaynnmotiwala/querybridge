@@ -11,7 +11,7 @@ from app.base.base_vectordb import BaseVectorDB
 
 
 class ChromaDataBase(BaseVectorDB):
-    def __init__(self, path:str="./vector_db", embeddings: dict={"provider": "chroma_default"}):
+    def __init__(self, path:str="./vector_db", embeddings: dict={"provider": "chroma_default", "vectordb": "chroma"}):
         logger.info("initializing with configs")
         self.client = None
         self.embedding_function = None
@@ -46,8 +46,13 @@ class ChromaDataBase(BaseVectorDB):
                 metadata={"hnsw:space": "cosine"}
             )
             logger.info(f"Connected to ChromaDB")
+            return None
         except Exception as e:
             logger.critical(f"Failed connecting ChromaDB: {e}")
+            return str(e)
+
+    def health_check(self):
+        pass
 
 
 
@@ -223,6 +228,3 @@ class ChromaDataBase(BaseVectorDB):
 
     def find_similar_cache(self, datasource, query, count = 3):
         return self._find_similar(datasource, query, self.samples_store, count)
-
-
-
