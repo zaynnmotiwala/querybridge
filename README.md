@@ -1,247 +1,205 @@
-<p align="center">
-  <a href="https://www.raggenie.com/">
-    <img src="https://cdn.prod.website-files.com/664e485574efd184749b7301/6658314c55210573e334ac1b_Group%2042.png" width="150" alt="RAGGENIE Logo">
-  </a>
-</p>
+# QueryBridge
 
-<h1 align="center">
-RAGGENIE
-</h1>
+QueryBridge is a low-code tool for building chatbots that answer questions from your own data. Connect a database, upload documents, or point it at a website, then choose an LLM, and you get a working conversational assistant with a chat UI you can embed in any web page.
 
+## Features
 
-## What is RAGGENIE
-RAGGENIE is a low-code RAG builder designed to make it easy to build your own conversational AI applications. RAGGENIE out of the box pluggins where you can connect to multiple data sources and create a conversational AI on top of that, along with integrating it with pre-built agents for actions.
+- **Chat with your databases.** QueryBridge turns plain-English questions into SQL, runs them, and explains the results.
+- **Chat with your documents.** Load text files, Word documents, CSVs, or website content into a vector database and ask questions about them.
+- **Bring your own LLM.** Works with OpenAI, Together AI, Ollama (local models), and AI71.
+- **Capabilities.** Define custom tasks the bot can perform, such as booking a meeting or filling in a form. The bot collects the required details from the user, then runs the task.
+- **Actions.** The bot can read data from and write data to a connected database.
+- **Intent detection.** The bot works out what the user wants and picks the right capability automatically.
+- **Embeddable chat widget.** Add the chatbot to any website with a short JavaScript snippet.
+- **Authentication.** Optional login through Zitadel, with Google sign-in support.
+- **Multiple bots.** Create separate bots for different teams or use cases, each with its own data and settings.
 
-The project is in its early stages, and we are working on adding more capabilities soon.
+## Supported integrations
 
-• Open-source tool: Since there is some community interest in this project and we can't build all the plugins ourselves, we decided to release it under the MIT license, giving the community full freedom.
+| Type          | Options                                                           |
+| ------------- | ----------------------------------------------------------------- |
+| LLM providers | OpenAI, Together AI, Ollama, AI71                                 |
+| Databases     | MySQL, PostgreSQL, MariaDB, MSSQL, SQLite, BigQuery, Airtable     |
+| Documents     | Document loader (text and Word files), CSV loader, website loader |
+| Vector stores | ChromaDB (default), MongoDB                                       |
 
-• Current focus: We are currently focused on making it easy to build RAG Application. Going forward we will be focusing on maintaince and monitoring of the RAG system as well cosidering how to help these applications to take from pilots to production.
+## How it works
 
-### RAGGENIE Demo
-1. Demo with database -    [![Demo with database](https://img.youtube.com/vi/7wBO6g4rj3U/0.jpg)](https://www.youtube.com/watch?v=7wBO6g4rj3U)
-2. Demo with website data -    [![Demo with website data](https://img.youtube.com/vi/8h4bqqs5S3U/0.jpg)](https://www.youtube.com/watch?v=8h4bqqs5S3U)
+```text
+            ┌───────────────────────────────┐
+ User ────► │  Chat UI / embeddable widget  │
+            └──────────────┬────────────────┘
+                           ▼
+            ┌───────────────────────────────┐
+            │          FastAPI backend      │
+            │  intent detection → routing   │
+            └───────┬───────────────┬───────┘
+                    │               │
+        ┌───────────▼───┐   ┌───────▼────────────┐
+        │  SQL plugins  │   │  Document plugins  │
+        │ (generate and │   │  (vector search in │
+        │  run queries) │   │     ChromaDB)      │
+        └───────┬───────┘   └───────┬────────────┘
+                └───────┬───────────┘
+                        ▼
+                 LLM writes the answer
+```
 
-## 🌎 Communities
+1. The user asks a question in the chat.
+2. QueryBridge detects the intent and decides which data source or capability to use.
+3. For databases, it generates and runs a SQL query. For documents, it searches the vector store.
+4. The LLM writes the final answer from the results.
 
-Join our communities for product updates, support, and to stay connected with the latest from RAGGENIE!
-*  Join our [Slack community](https://join.slack.com/t/theailounge/shared_invite/zt-2ogkrruyf-FPOHuPr5hdqXl34bDWjHjw) <img src="https://cdn.prod.website-files.com/634fa785d369cb60d80b6dd1/6375e1774613600a91630a78_Slack_icon_2019.svg.png" width="15" alt="RAGGENIE Logo">
-*  Leave a star on our [GitHub](https://github.com/sirocco-ventures/raggenie) 🌟
-*  Report bugs with [GitHub Issues](https://github.com/sirocco-ventures/raggenie/issues) 🐞
+## Tech stack
 
-## 📐 Architecture
+| Layer           | Technology                         |
+| --------------- | ---------------------------------- |
+| Backend         | Python 3.11, FastAPI, LangChain    |
+| Frontend        | React 18, Vite                     |
+| Vector store    | ChromaDB (ONNX default embeddings) |
+| Database access | SQLAlchemy and native drivers      |
+| Auth            | Zitadel                            |
+| Deployment      | Docker, Docker Compose, Nginx      |
 
-![picture of Architecture flow]()
+## Getting started
 
-### 🔮 Supported LLM Inferences
-Raggenie supports inference APIs to different LLM providers to run your model. The are the inference APIs currently supported by us:
-* [OpenAI](https://openai.com/index/openai-api/)
-* [Together.ai](https://www.together.ai/)
-* [Ollama] (https://ollama.com/)
-* [AI71] (https://ai71.ai/)
+### Requirements
 
-### 🗃️ Data Sources
-These connectors will help you connect your data to RAG. It can handle structured or unstructured data, enabling the RAG to answer questions from these sources.
-* Structured Datasources(airtable):<br />
-You can use raggenie to connect to your data sources to analyse it or to intergrate it to your application. Raggenie generates queries to execute on your data sources and provides the results. Current integrations are:
-    * [MySQL](https://www.mysql.com/)
-    * [PostgreSQL](https://www.postgresql.org/)
-    * [Bigquery](https://cloud.google.com/bigquery)
-    * [Airtable] (https://www.airtable.com/)
-    * [MariaDB](https://mariadb.org/)
-    * [MSSQL] (https://www.microsoft.com/en-in/sql-server)
-    * [SQLite] (https://www.sqlite.org/)
+- Python 3.11+
+- Node.js 18+ and npm
+- Docker and Docker Compose (only if you want login)
+- An API key for your LLM provider, or Ollama running locally
 
+### 1. Clone and install the backend
 
-* Document based sources(default):<br />
-These sources allows you to load documents such as text documents or Word documents to create an AI chat application that can interact with this data. Current integrations are:
-    * Document loader
-    * CSV loader
-    * Website loader
+```bash
+git clone <your-repo-url>
+cd querybridge
+pip install -r requirements.txt
+```
 
-### 💡Capabilities
-you can have more functionalities from RAGGENIE than just as a chatbot by defining its capabilities. They can be used to do tasks such as booking a meeting, checking a calendar, or completing a form from the chat.
+Or use Poetry:
 
-Capabilities of the chatbot are defined by the user at the time of configuration. You can setup parameters required for each capability.
-* RAGGENIE can make sure that all the parameters are obtained for executing the capability.
-* RAGGENIE uses intent extraction to decide which of its defined capabilities should be used.
-* Capabilities can be used to trigger different actions.
+```bash
+poetry install
+```
 
-### 🤖 Agents/Actions
-RAGGENIE can do actions to accomplish tasks with user queries. These can be setup along with capabilities to make RAGGENIE more than just a coversation bot. Currently supported actions are.
-* Fetch data from a database
-* Insert data into database
+### 2. Configure
 
-### 🖼️ UI Plugin
-This component will help you embed the chat widget into your UI with JavaScript. So that you can embeed this as a chat bot to your website or portal
+Settings live in `config.yaml`. The default vector store setup is:
 
-## 🛠️ Getting Started
-You can use RAGGENIE to create your own conversational chat feature for your application either by integrating it as a chatbot or by embedding it into your application. You can also use it to create different chatbots for different internal teams by tuning each chatbot for different tasks and using different knowledge base for different usecases.
+```yaml
+vector_db:
+  name: "chroma"
+  params:
+    path: "./vector_db"
+    embeddings:
+      provider: "chroma_default"
+```
 
-### How to run Video
-[![Setting up RAGGENIE](https://img.youtube.com/vi/LfCqiToOCvI/0.jpg)](https://www.youtube.com/watch?v=LfCqiToOCvI)
+Copy `.env.example` to `.env` and fill in your values.
 
-### 📄 Documentation
-Comprehensive documentation is available to help you get the most out of RAGGENIE. The full documentation for RAGGENIE can be found [here]()
+### 3. Run the backend
 
-### 📦 Installation and running
+```bash
+python main.py --config ./config.yaml llm
+```
 
-#### Raggenie Backend
+### 4. Run the frontend
 
-* Installing dependencies
+```bash
+cd ui
+npm install
+```
 
-  * **Using `requirements.txt`**
+Create `ui/.env` with the backend URL:
 
-    To install the required dependencies with `pip`, run:
-    
-    ```bash
-    pip install -r requirements.txt
-    ```
+```env
+VITE_BACKEND_URL=http://localhost:8001
+```
 
-  * **Using Poetry**
+Then start the dev server:
 
-    First, install Poetry:
-    
-    ```bash
-    curl -sSL https://install.python-poetry.org | python3 -
-    ```
-    
-    Then, to install the dependencies, run:
-    
-    ```bash
-    poetry install
-    ```
+```bash
+npm run dev
+```
 
-* Running Zitadel Container and Initial Setup
+**To serve the UI from the backend instead**, set `VITE_BACKEND_URL=""` in `ui/.env`, build the UI, and restart the backend:
 
-     * **Prerequisities**
-          * **Docker** installed on your system.
-          * **Docker Compose** installed on your system.
+```bash
+npm run build
+cd ..
+python main.py --config ./config.yaml llm
+```
 
-    1. Start the Zitadel container using Docker Compose:
-    
-    ```bash
-    docker-compose -f zitadel-docker-compose.yaml up -d
-    ```
-    
-    2. Once the container is running, open your browser and go to: http://localhost:8080
-    
-    
-    3. Log in using the default credentials:
-    
-        - **Username:** `zitadel-admin@zitadel.localhost`
-        - **Password:** `Password1!`
-        
-    4. Creating a Service User and downloading key file
-    
-        1. Navigate to the **Users** tab.
-        2. Select **Service Users** and create a new service user.
-        3. Provide a username and name of your choice.
-        4. Set the **Access Token Type** to **JWT**.
-        5. Go to the **Keys** section and create a new key:
-            - Click **New**, then **Add**, and finally **Download** the key file.
+### 5. Run everything with Docker (optional)
 
-    5. Go to the Organization tab, click **Add a Manager** (top right), select the service user you just created, set **Org Owner** permission, and click **Add**.
+```bash
+docker-compose up -d
+```
 
-    6. Follow this [guide](https://zitadel.com/docs/guides/integrate/identity-providers/google) to add Google as an identity provider. Use http://localhost:8080/idps/callback as the redirect URI.
-        
-     * #### Configuring Environment Variables
-     
-        After downloading the key file, create an `.env` file and set the following variables:
+## Optional: login with Zitadel
 
-        ```env
-        CLIENT_PRIVATE_KEY_FILE_PATH="./path/to/downloaded/key.json"
-        ZITADEL_TOKEN_URL="http://localhost:8080/oauth/v2/token"
-        ZITADEL_DOMAIN="http://localhost:8080"
-        ```
+1. Start Zitadel:
 
+   ```bash
+   docker-compose -f zitadel-docker-compose.yaml up -d
+   ```
 
+2. Open `localhost:8080` and sign in with the default admin account:
+   - Username: `zitadel-admin@zitadel.localhost`
+   - Password: `Password1!` (change it after your first login)
 
-* Running RAGGENIE backend
+3. Create a **service user**:
+   - Go to **Users → Service Users → New**.
+   - Set **Access Token Type** to **JWT**.
+   - Under **Keys**, click **New → Add → Download** to save the key file.
 
-  To run **RAGGENIE** in API mode, specify the config file to use by running the following command:
+4. In the **Organization** tab, click **Add a Manager**, select the service user, and give it the **Org Owner** role.
 
-  ```bash
-  python main.py --config ./config.yaml llm
-  ```
+5. To enable Google sign-in, add Google as an identity provider in Zitadel, with redirect URI `localhost:8080/idps/callback`.
 
-  Below is a sample configuration for the vector database setup in `config.yaml`:
+6. Add these values to `.env`:
 
-  ```yaml
-  vector_db:
-    name: "chroma"
-    params:
-      path: "./vector_db"
-      embeddings:
-        provider: "chroma_default"
-  ```
+   ```env
+   CLIENT_PRIVATE_KEY_FILE_PATH="./path/to/downloaded/key.json"
+   ZITADEL_TOKEN_URL="http://localhost:8080/oauth/v2/token"
+   ZITADEL_DOMAIN="http://localhost:8080"
+   ```
 
-This configuration ensures that the RAGGENIE system connects to the `chroma` vector database and uses the default embeddings provided by Chroma.
+## Project structure
 
-#### Raggenie Frontend
+```text
+├── app/
+│   ├── api/            # REST endpoints
+│   ├── chain/          # Query and response pipelines
+│   ├── loaders/        # LLM providers (OpenAI, Together AI, Ollama, AI71)
+│   ├── plugins/        # Data sources (MySQL, PostgreSQL, BigQuery, CSV, website, ...)
+│   ├── vectordb/       # ChromaDB and MongoDB vector stores
+│   ├── providers/      # Config, caching, reranking, auth
+│   ├── services/       # Business logic
+│   └── repository/     # Database access
+├── ui/                 # React frontend and embeddable chat widget
+├── tests/              # Unit and integration tests
+├── config.yaml         # Main configuration
+├── docker-compose.yml  # Full stack
+└── main.py             # Entry point
+```
 
-* Move into the ui folder
-  ```
-  cd ./ui
-  ```
+## Troubleshooting
 
-* Install dependencies
-  ```bash
-  npm install
-  ```
+**"Your system has an unsupported version of sqlite3. Chroma requires sqlite3 >= 3.35.0"**
 
-* Running RAGGENIE Frontend
+Your system's SQLite is too old for ChromaDB. Either upgrade SQLite, or install `pysqlite3-binary` and add this to the top of `main.py`:
 
-  * To run **RAGGENIE** frontend, create a .env file and add the URL to backend as env variables
-    ```env
-    VITE_BACKEND_URL=${BACKEND_URL}
-    ```
+```python
+__import__("pysqlite3")
+import sys
+sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
+```
 
-  * To start the server, run
-    ```bash
-    npm run dev
-    ```
-  * Running RAGGENIE Frontend using fast api
+## Roadmap
 
-    * Update .env file inside `./ui` folder
-      ```env
-      VITE_BACKEND_URL=""
-      ```
-    * To serve UI using python server first build the UI 
-      ```bash
-      npm run build
-      ```
-    * Stop and start python server
-
-      ```bash
-      python main.py --config ./config.yaml llm
-      ```
-
-for more details visit [frontend readme](./ui/README.md)
-
-## ⛔️ Troubleshooting
-
-If you encounter an error while running Python, please check the following
-
-- `Your system has an unsupported version of sqlite3. Chroma requires sqlite3 >= 3.35.0`
-    
-    This issue arises when the system is running a version of SQLite that is below 3.35. Chroma requires SQLite version 3.35 or higher.
-   
-   Please use the following links for suggested solutions
-
-   - https://docs.trychroma.com/troubleshooting#sqlite
-   - https://discuss.streamlit.io/t/issues-with-chroma-and-sqlite/47950/4
-   - https://gist.github.com/defulmere/8b9695e415a44271061cc8e272f3c300
-
-   
-
-## 🚧 Feature Pipeline
-These are the planned features and improvements that are in the pipeline for future releases.
-* REST API Requests for actions
-* Web hooks for actions
-
-## 📜 License
-RagGenie is licensed under the [MIT License](https://opensource.org/license/mit), which is a permissive open-source license that allows you to freely use, modify, and distribute the software with very few restrictions.
-
-## 🤝 Contributing
-Contributions are welcome! Please check the outstanding issues and feel free to open a pull request. For more information, please check out the [contribution guidelines](https://github.com/sirocco-ventures/raggenie/blob/main/CONTRIBUTING.md).
+- REST API calls as bot actions
+- Webhooks for actions
+- Monitoring and maintenance tools for deployed bots
